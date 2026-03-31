@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { generateComic } from './services/storyEngine.js';
+import { generateComic, generateWhatIfComic } from './services/storyEngine.js';
+import { ART_STYLES } from './services/styles.js';
+import { isLLMAvailable } from './services/llm.js';
 
 dotenv.config();
 
@@ -13,13 +15,10 @@ app.use(express.json());
 
 app.post('/api/generate', async (req, res) => {
   try {
-    const { prompt, mode = 'education', depth = 'normal' } = req.body;
+    const { prompt, mode = 'education', depth = 'normal', style = 'neo-noir' } = req.body;
+    if (!prompt?.trim()) return res.status(400).json({ error: 'Prompt is required' });
 
-    if (!prompt || prompt.trim().length === 0) {
-      return res.status(400).json({ error: 'Prompt is required' });
-    }
-
-    const comic = await generateComic(prompt.trim(), mode, depth);
+    const comic = await generateComic(prompt.trim(), mode, depth, style);
     res.json(comic);
   } catch (err) {
     console.error('Generation error:', err);
@@ -27,10 +26,34 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
+app.post('/api/generate/what-if', async (req, res) => {
+  try {
+    const { originalPrompt, scenario, mode = 'education', style = 'neo-noir' } = req.body;
+    if (!originalPrompt?.trim() || !scenario) {
+      return res.status(400).json({ error: 'Original prompt and scenario required' });
+    }
+
+    const comic = await generateWhatIfComic(originalPrompt.trim(), scenario, mode, style);
+    res.json(comic);
+  } catch (err) {
+    console.error('What-if generation error:', err);
+    res.status(500).json({ error: 'Failed to generate alternate comic.' });
+  }
+});
+
+app.get('/api/styles', (req, res) => {
+  const styles = Object.entries(ART_STYLES).map(([id, s]) => ({
+    id,
+    label: s.label,
+    cssFilter: s.cssFilter,
+  }));
+  res.json(styles);
+});
+
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: Date.now() });
+  res.json({ status: 'ok', llm: isLLMAvailable(), timestamp: Date.now() });
 });
 
 app.listen(PORT, () => {
-  console.log(`Noir Comics server running on port ${PORT}`);
+  console.log(`Noir Comics server on port ${PORT} | LLM: ${isLLMAvailable() ? 'connected' : 'fallback mode'}`);
 });

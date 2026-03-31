@@ -2,26 +2,23 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Home, ExternalLink } from 'lucide-react';
 import ComicPage from './ComicPage';
+import WhatIfSection from './WhatIfSection';
 import './ComicBook.css';
 
-export default function ComicBook({ comic, onBack }) {
+export default function ComicBook({ comic, onBack, onWhatIf }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(1);
   const pages = comic.pages || [];
   const total = pages.length;
+  const isLastPage = currentPage === total - 1;
+  const hasWhatIfs = comic.what_if_scenarios?.length > 0 && !comic.isAlternate;
 
   const goNext = useCallback(() => {
-    if (currentPage < total - 1) {
-      setDirection(1);
-      setCurrentPage(p => p + 1);
-    }
+    if (currentPage < total - 1) { setDirection(1); setCurrentPage(p => p + 1); }
   }, [currentPage, total]);
 
   const goPrev = useCallback(() => {
-    if (currentPage > 0) {
-      setDirection(-1);
-      setCurrentPage(p => p - 1);
-    }
+    if (currentPage > 0) { setDirection(-1); setCurrentPage(p => p - 1); }
   }, [currentPage]);
 
   const handleKeyDown = useCallback((e) => {
@@ -56,22 +53,20 @@ export default function ComicBook({ comic, onBack }) {
           <h1 className="book__title">{comic.title}</h1>
           <div className="book__meta">
             <span className="book__badge">{comic.mode}</span>
+            {comic.isAlternate && (
+              <span className="book__badge book__badge--alt">What-If</span>
+            )}
             {comic.source === 'Wikipedia' && (
-              <a
-                className="book__source"
-                href={comic.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a className="book__source" href={comic.sourceUrl} target="_blank" rel="noopener noreferrer">
                 <ExternalLink size={11} />
-                Source: Wikipedia
+                Wikipedia
               </a>
             )}
           </div>
         </div>
 
         <div className="book__page-info">
-          Page {currentPage + 1} of {total}
+          Page {currentPage + 1} / {total}
         </div>
       </header>
 
@@ -91,6 +86,7 @@ export default function ComicBook({ comic, onBack }) {
               page={pages[currentPage]}
               pageIndex={currentPage}
               totalPages={total}
+              cssFilter={comic.cssFilter}
             />
           </motion.div>
         </AnimatePresence>
@@ -98,13 +94,8 @@ export default function ComicBook({ comic, onBack }) {
 
       <footer className="book__footer">
         <div className="book__nav-row">
-          <button
-            className="book__nav book__nav--prev"
-            onClick={goPrev}
-            disabled={currentPage === 0}
-          >
-            <ChevronLeft size={20} />
-            Prev
+          <button className="book__nav book__nav--prev" onClick={goPrev} disabled={currentPage === 0}>
+            <ChevronLeft size={20} /> Prev
           </button>
 
           <div className="book__dots">
@@ -113,22 +104,23 @@ export default function ComicBook({ comic, onBack }) {
                 key={i}
                 className={`book__dot ${i === currentPage ? 'book__dot--active' : ''} ${i < currentPage ? 'book__dot--done' : ''}`}
                 onClick={() => { setDirection(i > currentPage ? 1 : -1); setCurrentPage(i); }}
-                aria-label={`Page ${i + 1}`}
               />
             ))}
           </div>
 
-          <button
-            className="book__nav book__nav--next"
-            onClick={goNext}
-            disabled={currentPage === total - 1}
-          >
-            Next
-            <ChevronRight size={20} />
+          <button className="book__nav book__nav--next" onClick={goNext} disabled={isLastPage}>
+            Next <ChevronRight size={20} />
           </button>
         </div>
         <p className="book__hint">Arrow keys to navigate pages</p>
       </footer>
+
+      {isLastPage && hasWhatIfs && (
+        <WhatIfSection
+          scenarios={comic.what_if_scenarios}
+          onSelect={onWhatIf}
+        />
+      )}
     </motion.div>
   );
 }

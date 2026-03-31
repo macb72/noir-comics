@@ -1,0 +1,134 @@
+.whatif {
+  width: 100%;
+  padding: 2rem 1.5rem 3rem;
+  background: linear-gradient(to bottom, var(--noir-black), rgba(20,15,8,0.4), var(--noir-black));
+  position: relative;
+  z-index: 15;
+}
+
+.whatif::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--noir-accent-dim), transparent);
+}
+
+.whatif__inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.whatif__header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.whatif__icon {
+  color: var(--noir-accent);
+  margin-bottom: 0.5rem;
+}
+
+.whatif__title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--noir-white);
+  margin-bottom: 0.35rem;
+}
+
+.whatif__subtitle {
+  font-size: 0.8rem;
+  color: var(--noir-text-dim);
+}
+
+.whatif__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.whatif__card {
+  background: var(--noir-dark);
+  border: 1px solid var(--noir-mid);
+  border-radius: 8px;
+  padding: 1.2rem 1rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: all 0.25s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.whatif__card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--noir-accent);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.whatif__card:hover {
+  border-color: var(--noir-accent-dim);
+  background: rgba(212, 168, 83, 0.04);
+}
+
+.whatif__card:hover::before {
+  opacity: 1;
+}
+
+.whatif__card-number {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--noir-accent);
+  opacity: 0.5;
+  letter-spacing: 0.1em;
+}
+
+.whatif__card-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--noir-white);
+  line-height: 1.3;
+}
+
+.whatif__card-desc {
+  font-size: 0.78rem;
+  color: var(--noir-text-dim);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.whatif__card-cta {
+  font-size: 0.7rem;
+  color: var(--noir-accent);
+  letter-spacing: 0.03em;
+  opacity: 0;
+  transition: opacity 0.25s;
+  margin-top: 0.25rem;
+}
+
+.whatif__card:hover .whatif__card-cta {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .whatif__cards {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .whatif { padding: 1.5rem 1rem 2rem; }
+  .whatif__title { font-size: 1.1rem; }
+}
