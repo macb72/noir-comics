@@ -1,11 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { generateComic, generateWhatIfComic } from './services/storyEngine.js';
 import { ART_STYLES } from './services/styles.js';
 import { isLLMAvailable } from './services/llm.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -52,6 +57,12 @@ app.get('/api/styles', (req, res) => {
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', llm: isLLMAvailable(), timestamp: Date.now() });
+});
+
+const clientDist = path.join(__dirname, '../client/dist');
+app.use(express.static(clientDist));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(clientDist, 'index.html'));
 });
 
 app.listen(PORT, () => {
