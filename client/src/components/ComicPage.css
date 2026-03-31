@@ -1,0 +1,60 @@
+.comic-page {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: var(--noir-dark);
+  border: 3px solid var(--noir-light);
+  border-radius: 4px;
+  padding: 6px;
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.7),
+    inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.comic-page__cell {
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--noir-light);
+  border-radius: 2px;
+  background: var(--noir-black);
+  min-height: 0;
+}
+
+.comic-page__page-number {
+  position: absolute;
+  bottom: -1px;
+  right: 12px;
+  font-family: var(--font-noir);
+  font-size: 0.65rem;
+  color: var(--noir-text-dim);
+  opacity: 0.4;
+  background: var(--noir-dark);
+  padding: 0 6px;
+  z-index: 5;
+}
+
+@media (max-width: 768px) {
+  .comic-page {
+    gap: 4px;
+    padding: 4px;
+    border-width: 2px;
+  }
+
+  .comic-page__cell {
+    border-width: 1.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .comic-page {
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "a"
+      "b"
+      "c"
+      "d" !important;
+    grid-template-rows: repeat(auto-fill, 1fr) !important;
+  }
+}
